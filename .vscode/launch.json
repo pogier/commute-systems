@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API Server",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["ts-node", "${workspaceFolder}/api/src/index.ts"],
+      "cwd": "${workspaceFolder}/api",
+      "envFile": "${workspaceFolder}/api/.env",
+      "console": "integratedTerminal",
+      "skipFiles": ["/**"]
+    }
+  ]
+}

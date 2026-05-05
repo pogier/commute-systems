@@ -1,0 +1,37 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --border: #2e3348;
+  --accent: #4f8ef7;
+  --accent2: #38d9a9;
+  --danger: #f06b6b;
+  --warn: #f5a623;
+  --text: #e8eaf0;
+  --text2: #8b92a9;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+body { background: var(--bg); color: var(--text); min-height: 100vh; }
+a { color: var(--accent); text-decoration: none; }
+button { cursor: pointer; border: none; outline: none; }
+input, select, textarea {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 8px 12px;
+  font-size: 14px; width: 100%;
+}
+input:focus, select:focus { border-color: var(--accent); outline: none; }
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+}
+.badge.pending   { background: #3d3320; color: var(--warn); }
+.badge.confirmed { background: #1a3040; color: var(--accent); }
+.badge.onboard   { background: #1a3530; color: var(--accent2); }
+.badge.completed { background: #1f3525; color: #6fcf97; }
+.badge.cancelled { background: #3d2020; color: var(--danger); }
+.badge.active    { background: #1a3530; color: var(--accent2); }
+.badge.idle      { background: #2a2d3a; color: var(--text2); }
+.badge.admin     { background: #2d2040; color: #c084fc; }
+.badge.driver    { background: #1a3040; color: var(--accent); }
+.badge.passenger { background: #1f3525; color: var(--accent2); }
