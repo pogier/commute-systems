@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0F1117">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="#1A1D27"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:text="🎫 Book a Ride"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#E8EAF0"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/signOutBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Sign Out"
+            android:textSize="12sp"
+            android:backgroundTint="#2E3348"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:text="SELECT ROUTE"
+                android:textSize="11sp"
+                android:textColor="#8B92A9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"/>
+
+            <Spinner
+                android:id="@+id/routeSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="12dp"/>
+
+            <EditText
+                android:id="@+id/pickupInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Pickup address"
+                android:textColor="#E8EAF0"
+                android:textColorHint="#8B92A9"
+                android:padding="12dp"
+                android:background="#1A1D27"
+                android:layout_marginBottom="10dp"/>
+
+            <EditText
+                android:id="@+id/dropoffInput"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Drop-off address"
+                android:textColor="#E8EAF0"
+                android:textColorHint="#8B92A9"
+                android:padding="12dp"
+                android:background="#1A1D27"
+                android:layout_marginBottom="14dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <Button
+                    android:id="@+id/bookBtn"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="52dp"
+                    android:text="Book Now"
+                    android:textColor="#0F1117"
+                    android:textStyle="bold"
+                    android:backgroundTint="#4F8EF7"
+                    android:layout_marginEnd="8dp"/>
+
+                <Button
+                    android:id="@+id/myBookingsBtn"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="52dp"
+                    android:text="My Bookings"
+                    android:textColor="#E8EAF0"
+                    android:backgroundTint="#2E3348"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/bookingStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ready to book your ride"
+                android:textSize="13sp"
+                android:textColor="#8B92A9"
+                android:gravity="center"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
