@@ -61,6 +61,24 @@ router.post('/login', async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
+
+    // Add inside the login POST handler, after verifying the password:
+  let vehicleId: number | null = null;
+  if (user.role === "driver") {
+    const vRes = await pgPool.query(
+      "SELECT id FROM vehicles WHERE driver_id = $1 LIMIT 1", [user.id]
+    );
+    vehicleId = vRes.rows[0]?.id || null;
+  }
+
+  const token = jwt.sign(
+    { id: user.id, role: user.role, vehicleId },
+    process.env.JWT_SECRET || "secret",
+    { expiresIn: "7d" }
+  );
+  res.json({ token, user });
+
+  
 });
 
 // GET /api/auth/me — get current user
