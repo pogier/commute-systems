@@ -1,4 +1,4 @@
-package com.commute.ui.activities
+﻿package com.commute.ui.activities
 
 import android.Manifest
 import android.content.res.ColorStateList
@@ -20,28 +20,31 @@ import com.google.android.gms.location.*
 import kotlinx.coroutines.launch
 
 class DriverActivity : AppCompatActivity() {
+
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private var isOnline = false
-    private var vehicleId = 1  // TODO: get from SessionManager.getVehicleId()
+    private var vehicleId = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_driver)
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        fetchBookings()  // load list immediately on screen open
+        fetchBookings()
 
         SocketManager.onNewBooking { bookingJson ->
             runOnUiThread {
                 val pickup = bookingJson.optString("pickup_address", "Unknown")
                 Toast.makeText(this, "New booking! Pickup: $pickup", Toast.LENGTH_LONG).show()
-                fetchBookings()  // refresh list
+                fetchBookings()
             }
         }
 
         val goOnlineBtn = findViewById<Button>(R.id.goOnlineBtn)
         val statusText  = findViewById<TextView>(R.id.statusText)
+
         goOnlineBtn.setOnClickListener {
             if (!isOnline) {
                 startLocationUpdates(); isOnline = true
@@ -126,9 +129,9 @@ class DriverActivity : AppCompatActivity() {
 
     private fun startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1001); return
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1001); return
         }
         val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000).build()
         locationCallback = object : LocationCallback() {
