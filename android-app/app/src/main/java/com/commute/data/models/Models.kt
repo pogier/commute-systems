@@ -10,4 +10,4 @@ data class Route(val id: Int, val name: String, val origin: String, val destinat
 data class Vehicle(val id: Int, val plate_number: String, val type: String, val capacity: Int, val status: String, val driver_name: String?, val live_lat: Double?, val live_lng: Double?, val live_speed: Double?)
 data class Booking(val id: Int, val passenger_id: Int, val vehicle_id: Int?, val route_id: Int, val route_name: String?, val pickup_address: String, val dropoff_address: String, val status: String, val fare: Double, val created_at: String)
 data class CreateBookingRequest(val route_id: Int, val pickup_address: String, val dropoff_address: String)
-data class StatusUpdateRequest(val status: String)
+data class StatusUpdateRequest(val status: String, val vehicle_id: Int? = null)

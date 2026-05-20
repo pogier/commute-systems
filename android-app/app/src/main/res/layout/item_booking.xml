@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#0F1522"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp">
+
+    <LinearLayout android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp">
+        <TextView android:id="@+id/bRoute"
+            android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="13sp" android:textStyle="bold" android:textColor="#D5E3F7"/>
+        <TextView android:id="@+id/bStatus"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textSize="10sp" android:textStyle="bold" android:textColor="#4A8FF5"/>
+    </LinearLayout>
+
+    <TextView android:id="@+id/bPickup"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:textSize="12sp" android:textColor="#526A96" android:layout_marginBottom="2dp"/>
+
+    <TextView android:id="@+id/bDropoff"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:textSize="12sp" android:textColor="#526A96" android:layout_marginBottom="8dp"/>
+
+    <LinearLayout android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView android:id="@+id/bFare"
+            android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="14sp" android:textStyle="bold" android:textColor="#38BDF8"/>
+        <Button android:id="@+id/bAcceptBtn"
+            android:layout_width="wrap_content" android:layout_height="32dp"
+            android:text="Accept" android:textSize="11sp" android:textStyle="bold"
+            android:paddingHorizontal="14dp"
+            android:backgroundTint="#10B981"
+            android:textColor="#FFFFFF"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+</LinearLayout>

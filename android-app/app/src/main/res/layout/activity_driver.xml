@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:background="#0F1117">
 
+    <!-- HEADER -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,31 +32,124 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
-    <LinearLayout
+    <!-- SCROLLABLE BODY -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:gravity="center">
+        android:fillViewport="true">
 
-        <TextView
-            android:text="Tap Go Online to start sending your GPS location to passengers in real time."
-            android:textSize="14sp"
-            android:textColor="#8B92A9"
-            android:gravity="center"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"/>
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <Button
-            android:id="@+id/goOnlineBtn"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="Go Online"
-            android:textColor="#0F1117"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:backgroundTint="#38D9A9"/>
+            <!-- GPS STATUS CARD -->
+            <LinearLayout
+                android:background="@drawable/card_bg"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
 
-    </LinearLayout>
+                <TextView
+                    android:text="GPS STATUS"
+                    android:textSize="10sp"
+                    android:textColor="#526A96"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:id="@+id/tvGpsStatus"
+                    android:text="Waiting for location..."
+                    android:textSize="14sp"
+                    android:textColor="#E8EAF0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <!-- HOW IT WORKS CARD -->
+            <LinearLayout
+                android:background="@drawable/card_bg"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:text="HOW IT WORKS"
+                    android:textSize="10sp"
+                    android:textColor="#526A96"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:text="1. Tap Go Online&#10;2. Your GPS is sent to passengers&#10;3. Bookings appear below automatically"
+                    android:textSize="13sp"
+                    android:textColor="#8B92A9"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+            <!-- GO ONLINE SECTION -->
+            <TextView
+                android:text="Tap Go Online to start sending your GPS location to passengers in real time."
+                android:textSize="14sp"
+                android:textColor="#8B92A9"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/goOnlineBtn"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Go Online"
+                android:textColor="#0F1117"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:backgroundTint="#38D9A9"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- BOOKINGS CARD -->
+            <LinearLayout
+                android:background="@drawable/card_bg"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="INCOMING BOOKINGS"
+                    android:textSize="10sp"
+                    android:textColor="#526A96"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:text="Loads on start  |  Refreshes on new_booking socket event"
+                    android:textSize="10sp"
+                    android:textColor="#2D3F64"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"/>
+
+                <LinearLayout
+                    android:id="@+id/bookingsContainer"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>
