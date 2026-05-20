@@ -1,63 +1,48 @@
 import { Router, Request, Response } from 'express';
-import { pgPool, redisClient } from '../config/db';
-import { authMiddleware, requireRole, AuthRequest } from '../middleware/auth';
+import { pgPool } from '../config/db';
+import { authMiddleware, AuthRequest } from '../middleware/auth';
+import { requireRole } from '../middleware/requireRole';
 
 const router = Router();
 
 router.get('/vehicles', async (_req: Request, res: Response) => {
   try {
-    const result = await pgPool.query(`
-      SELECT v.*, u.name AS driver_name
-      FROM vehicles v
-      LEFT JOIN users u ON v.driver_id = u.id
-      ORDER BY v.id
-    `);
-    const vehicles = await Promise.all(result.rows.map(async (v) => {
-      try {
-        const liveData = await redisClient.get(`vehicle:${v.id}:location`);
-        if (liveData) {
-          const loc = JSON.parse(liveData.toString());
-          return { ...v, live_lat: loc.lat, live_lng: loc.lng, live_speed: loc.speed };
-        }
-      } catch {}
-      return v;
-    }));
-    res.json(vehicles);
+    const result = await pgPool.query(
+      `SELECT v.*, u.name as driver_name
+       FROM vehicles v LEFT JOIN users u ON v.driver_id = u.id
+       ORDER BY v.id`
+    );
+    res.json(result.rows);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 });
 
-router.post('/vehicles', authMiddleware, requireRole('admin'), async (req: AuthRequest, res: Response) => {
-  const { plate_number, type, capacity, driver_id } = req.body;
-  if (!plate_number) return res.status(400).json({ error: 'plate_number is required' });
+router.post('/vehicles', authMiddleware as any, requireRole('admin') as any, async (req: Request, res: Response) => {
+  const { plate_number, model, capacity, driver_id } = req.body;
   try {
     const result = await pgPool.query(
-      `INSERT INTO vehicles (plate_number, type, capacity, driver_id) VALUES ($1,$2,$3,$4) RETURNING *`,
-      [plate_number, type || 'jeepney', capacity || 20, driver_id || null]
+      `INSERT INTO vehicles (plate_number, model, capacity, driver_id)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [plate_number, model, capacity, driver_id]
     );
     res.status(201).json(result.rows[0]);
   } catch (err: any) {
-    if (err.code === '23505') return res.status(409).json({ error: 'Plate number already exists' });
     res.status(500).json({ error: err.message });
   }
 });
 
-router.patch('/vehicles/:id/status', authMiddleware, async (req: AuthRequest, res: Response) => {
-  const { status } = req.body;
+router.patch('/vehicles/:id/status', authMiddleware as any, async (req: Request, res: Response) => {
+  const { status, latitude, longitude, speed, bearing } = req.body;
   try {
-    const result = await pgPool.query('UPDATE vehicles SET status=$1 WHERE id=$2 RETURNING *', [status, req.params.id]);
+    const result = await pgPool.query(
+      `UPDATE vehicles SET status = COALESCE($1, status),
+       latitude = COALESCE($2, latitude), longitude = COALESCE($3, longitude),
+       speed = COALESCE($4, speed), bearing = COALESCE($5, bearing),
+       last_seen = NOW() WHERE id = $6 RETURNING *`,
+      [status, latitude, longitude, speed, bearing, req.params.id]
+    );
     res.json(result.rows[0]);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-router.get('/vehicles/:id/location', async (req: Request, res: Response) => {
-  try {
-    const data = await redisClient.get(`vehicle:${req.params.id}:location`);
-    if (!data) return res.json({ message: 'No live location data' });
-    res.json(JSON.parse(data.toString()));
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -65,20 +50,20 @@ router.get('/vehicles/:id/location', async (req: Request, res: Response) => {
 
 router.get('/routes', async (_req: Request, res: Response) => {
   try {
-    const result = await pgPool.query('SELECT * FROM routes WHERE is_active = true ORDER BY id');
+    const result = await pgPool.query('SELECT * FROM routes ORDER BY id');
     res.json(result.rows);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 });
 
-router.post('/routes', authMiddleware, requireRole('admin'), async (req: AuthRequest, res: Response) => {
-  const { name, origin, destination, stops, fare } = req.body;
-  if (!name || !origin || !destination) return res.status(400).json({ error: 'name, origin, and destination are required' });
+router.post('/routes', authMiddleware as any, requireRole('admin') as any, async (req: Request, res: Response) => {
+  const { name, origin, destination, fare } = req.body;
   try {
     const result = await pgPool.query(
-      `INSERT INTO routes (name, origin, destination, stops, fare, is_active) VALUES ($1,$2,$3,$4,$5,true) RETURNING *`,
-      [name, origin, destination, JSON.stringify(stops || []), fare || 0]
+      `INSERT INTO routes (name, origin, destination, fare)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [name, origin, destination, fare]
     );
     res.status(201).json(result.rows[0]);
   } catch (err: any) {
@@ -86,9 +71,29 @@ router.post('/routes', authMiddleware, requireRole('admin'), async (req: AuthReq
   }
 });
 
-router.get('/drivers', authMiddleware, async (_req: AuthRequest, res: Response) => {
+router.delete('/routes/:id', authMiddleware as any, requireRole('admin') as any, async (req: Request, res: Response) => {
   try {
-    const result = await pgPool.query(`SELECT id, name, email, phone FROM users WHERE role='driver' AND is_active=true ORDER BY name`);
+    await pgPool.query('DELETE FROM routes WHERE id = $1', [req.params.id]);
+    res.json({ message: 'Route deleted' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/vehicles/:id', authMiddleware as any, requireRole('admin') as any, async (req: Request, res: Response) => {
+  try {
+    await pgPool.query('DELETE FROM vehicles WHERE id = $1', [req.params.id]);
+    res.json({ message: 'Vehicle deleted' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/drivers', authMiddleware as any, async (_req: Request, res: Response) => {
+  try {
+    const result = await pgPool.query(
+      `SELECT id, name, email, phone FROM users WHERE role = 'driver' ORDER BY name`
+    );
     res.json(result.rows);
   } catch (err: any) {
     res.status(500).json({ error: err.message });

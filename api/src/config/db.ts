@@ -82,6 +82,14 @@ const runMigrations = async () => {
     );
   `);
 
+  // Add columns that may be missing from older table versions
+  await pgPool.query(`
+    ALTER TABLE bookings ADD COLUMN IF NOT EXISTS pickup_address TEXT;
+    ALTER TABLE bookings ADD COLUMN IF NOT EXISTS dropoff_address TEXT;
+    ALTER TABLE bookings ADD COLUMN IF NOT EXISTS scheduled_time TIMESTAMP;
+    ALTER TABLE bookings ADD COLUMN IF NOT EXISTS fare DECIMAL(10,2);
+  `);
+
   // Seed sample data if empty
   const { rows: routeRows } = await pgPool.query('SELECT COUNT(*) FROM routes');
   if (parseInt(routeRows[0].count) === 0) {

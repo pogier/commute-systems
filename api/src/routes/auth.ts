@@ -6,14 +6,10 @@ import { authMiddleware, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
-// POST /api/auth/register
 router.post('/register', async (req: Request, res: Response) => {
   const { name, email, password, role = 'passenger', phone } = req.body;
-
-  if (!name || !email || !password) {
+  if (!name || !email || !password)
     return res.status(400).json({ error: 'name, email, and password are required' });
-  }
-
   try {
     const hash = await bcrypt.hash(password, 10);
     const result = await pgPool.query(
@@ -35,25 +31,29 @@ router.post('/register', async (req: Request, res: Response) => {
   }
 });
 
-// POST /api/auth/login
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
-
+  if (!email || !password)
+    return res.status(400).json({ error: 'Email and password required' });
   try {
     const result = await pgPool.query('SELECT * FROM users WHERE email = $1', [email]);
     const user = result.rows[0];
-
-    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+    if (!user || !(await bcrypt.compare(password, user.password_hash)))
       return res.status(401).json({ error: 'Invalid email or password' });
+
+    let vehicleId: number | null = null;
+    if (user.role === 'driver') {
+      const vRes = await pgPool.query(
+        'SELECT id FROM vehicles WHERE driver_id = $1 LIMIT 1', [user.id]
+      );
+      vehicleId = vRes.rows[0]?.id || null;
     }
 
     const token = jwt.sign(
-      { id: user.id, role: user.role, email: user.email },
+      { id: user.id, role: user.role, vehicleId },
       process.env.JWT_SECRET || 'secret',
       { expiresIn: '7d' }
     );
-
     res.json({
       token,
       user: { id: user.id, name: user.name, email: user.email, role: user.role, phone: user.phone }
@@ -61,32 +61,13 @@ router.post('/login', async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
-
-    // Add inside the login POST handler, after verifying the password:
-  let vehicleId: number | null = null;
-  if (user.role === "driver") {
-    const vRes = await pgPool.query(
-      "SELECT id FROM vehicles WHERE driver_id = $1 LIMIT 1", [user.id]
-    );
-    vehicleId = vRes.rows[0]?.id || null;
-  }
-
-  const token = jwt.sign(
-    { id: user.id, role: user.role, vehicleId },
-    process.env.JWT_SECRET || "secret",
-    { expiresIn: "7d" }
-  );
-  res.json({ token, user });
-
-  
 });
 
-// GET /api/auth/me — get current user
-router.get('/me', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/me', authMiddleware as any, async (req: Request, res: Response) => {
+  const u = (req as AuthRequest).user!;
   try {
     const result = await pgPool.query(
-      'SELECT id, name, email, role, phone, created_at FROM users WHERE id = $1',
-      [req.user!.id]
+      'SELECT id, name, email, role, phone, created_at FROM users WHERE id = $1', [u.id]
     );
     res.json(result.rows[0]);
   } catch (err: any) {
@@ -94,11 +75,11 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response) => {
   }
 });
 
-// PUT /api/auth/fcm-token — save Firebase token for push notifications
-router.put('/fcm-token', authMiddleware, async (req: AuthRequest, res: Response) => {
-  const { fcm_token } = req.body;
+router.put('/fcm-token', authMiddleware as any, async (req: Request, res: Response) => {
+  const u = (req as AuthRequest).user!;
+  const fcm_token = (req as any).body?.fcm_token;
   try {
-    await pgPool.query('UPDATE users SET fcm_token = $1 WHERE id = $2', [fcm_token, req.user!.id]);
+    await pgPool.query('UPDATE users SET fcm_token = $1 WHERE id = $2', [fcm_token, u.id]);
     res.json({ message: 'FCM token updated' });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
